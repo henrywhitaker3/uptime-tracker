@@ -65,10 +65,15 @@ export default class Settings extends Component {
                 </Col>
                 <Col lg={{ span: 4 }} md={{ span: 6 }} sm={{ span: 12 }}>
                     <SettingWithModal
-                        title="Healthchecks settings"
-                        description="Configure settings for the healthchecks connection tests"
+                        title="Connection settings"
+                        description="Configure settings for the connection tests"
                         autoClose={true}
                         settings={[
+                            {
+                                obj: e.ip,
+                                type: 'text',
+                                caps: true,
+                            },
                             {
                                 obj: e.healthchecks_url,
                                 type: 'text'

@@ -27,12 +27,12 @@ class CreateSettingsTable extends Migration
             [
                 'name' => 'ip',
                 'value' => '1.1.1.1',
-                'description' => 'The IP address to ping to check internet access.'
+                'description' => 'The IP address that is pinged during connection tests.'
             ],
             [
                 'name' => 'healthchecks_uuid',
                 'value' => '',
-                'description' => 'The healthchekcs UUID to ping.'
+                'description' => 'The healthchecks UUID to ping.'
             ],
             [
                 'name' => 'healthchecks_url',

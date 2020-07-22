@@ -172,7 +172,7 @@ class PingHelper {
             $recentOpp = PingHelper::mostRecentSuccess();
         }
 
-        $now = Carbon::now();
+        $now = Carbon::now('UTC');
 
         $readable = $now->diffForHumans($recentOpp->created_at, true);
         $diff = $now->diff($recentOpp->created_at);
@@ -202,5 +202,15 @@ class PingHelper {
         if($type == 'healthchecks') {
             return PingHelper::healthchecksPing();
         }
+    }
+
+    /**
+     * Get a total up/downtime value for all time
+     *
+     * @return array
+     */
+    public static function totalUptime()
+    {
+
     }
 }

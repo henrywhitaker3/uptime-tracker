@@ -14,7 +14,7 @@ export default class AllTests extends Component {
             page: 1,
             lastPage: 1,
             data: [],
-            show: false,
+            show: true,
             refresh: true,
         }
     }
@@ -37,7 +37,6 @@ export default class AllTests extends Component {
             }
             var page = resp.data.data.current_page;
             var lastPage = resp.data.data.last_page;
-            console.lo
             this.setState({
                 data: data,
                 page: page,
@@ -114,6 +113,7 @@ export default class AllTests extends Component {
                                                 <th>Type</th>
                                                 <th>Success</th>
                                                 <th>Target</th>
+                                                <th>Error</th>
                                                 {/* <th>More</th> */}
                                             </tr>
                                         </thead>
