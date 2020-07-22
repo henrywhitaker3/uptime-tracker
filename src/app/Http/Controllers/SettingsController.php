@@ -45,7 +45,7 @@ class SettingsController extends Controller
         $rule = [
             'name' => [ 'required', 'string', 'min:1' ],
         ];
-        if($request->name == 'schedule') {
+        if($request->name == 'ping_schedule') {
             $rule['value'] = [ 'required', new Cron ];
         }
 

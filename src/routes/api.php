@@ -34,3 +34,21 @@ Route::group([
     Route::get('/changelog', 'SettingsController@changelog')
          ->name('settings.changelog');
 });
+
+Route::group([
+    'middleware' => 'api',
+    'prefix' => 'uptime'
+], function () {
+    Route::get('status', 'UptimeController@status')
+         ->name('uptime.status');
+});
+
+Route::group([
+    'middleware' => 'api',
+    'prefix' => 'test'
+], function () {
+    Route::get('/', 'PingController@index')
+         ->name('ping.index');
+    Route::get('run', 'PingController@run')
+         ->name('ping.run');
+});

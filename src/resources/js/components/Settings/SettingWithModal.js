@@ -155,7 +155,7 @@ export default class SettingWithModal extends Component {
                                 );
                             } else if(e.type == 'number') {
                                 return (
-                                    <Row key={e.obj.id}>
+                                    <Row key={e.obj.id} className="d-flex align-items-center">
                                         <Col md={md} sm={sm}>
                                             <Form.Group controlId={e.obj.name}>
                                                 <Form.Label>{name}</Form.Label>
@@ -178,7 +178,7 @@ export default class SettingWithModal extends Component {
                                 );
                             } else if(e.type == 'text') {
                                 return (
-                                    <Row key={e.obj.id}>
+                                    <Row key={e.obj.id} className="d-flex align-items-center">
                                         <Col md={md} sm={sm}>
                                             <Form.Group controlId={e.obj.name}>
                                                 <Form.Label>{name}</Form.Label>
@@ -201,7 +201,7 @@ export default class SettingWithModal extends Component {
                                 );
                             } else if(e.type == 'select') {
                                 return (
-                                    <Row key={e.obj.id}>
+                                    <Row key={e.obj.id} className="d-flex align-items-center">
                                         <Col md={md} sm={sm}>
                                             <Form.Group controlId={e.obj.name}>
                                                 <Form.Label>{name}</Form.Label>
@@ -236,7 +236,7 @@ export default class SettingWithModal extends Component {
                                 )
                             } else if(e.type == 'button-get') {
                                 return (
-                                    <Row key={e.obj.id}>
+                                    <Row key={e.obj.id} className="d-flex align-items-center">
                                         <Col md={md} sm={sm}>
                                             <p>{name}</p>
                                             <Button onClick={() => { Axios.get(e.url) }} >{name}</Button>

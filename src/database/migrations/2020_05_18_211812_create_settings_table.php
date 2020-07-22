@@ -24,11 +24,31 @@ class CreateSettingsTable extends Migration
         });
 
         $settings = [
-            // [
-            //     'name' => 'schedule',
-            //     'value' => '0 * * * *',
-            //     'description' => '<p class="d-inline">Set the schedule for speedtests to run using the CRON format. </p><a href="https://crontab.guru/" target="_blank" rel="noopener noreferer">This site</a> can help with formatting.'
-            // ],
+            [
+                'name' => 'ip',
+                'value' => '1.1.1.1',
+                'description' => 'The IP address to ping to check internet access.'
+            ],
+            [
+                'name' => 'healthchecks_uuid',
+                'value' => '',
+                'description' => 'The healthchekcs UUID to ping.'
+            ],
+            [
+                'name' => 'healthchecks_url',
+                'value' => 'https://hc-ping.com/',
+                'description' => 'The healthchecks url to ping.'
+            ],
+            [
+                'name' => 'test_schedule',
+                'value' => '* * * * *',
+                'description' => 'The CRON schedule for running connection tests.'
+            ],
+            [
+                'name' => 'test_type',
+                'value' => 'ping',
+                'description' => 'The type of connection test to run.'
+            ]
         ];
 
         foreach($settings as $s) {

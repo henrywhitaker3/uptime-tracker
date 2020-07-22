@@ -6,6 +6,7 @@ use App\Events\SpeedtestOverviewEvent;
 use App\Helpers\SettingsHelper;
 use App\Helpers\SpeedtestHelper;
 use App\Jobs\SpeedtestJob;
+use App\Jobs\TestJob;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
@@ -28,8 +29,7 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        $schedule->job(new SpeedtestJob)->cron(SettingsHelper::get('schedule')['value']);
-        $schedule->command('speedtest:overview')->cron('0 ' . SettingsHelper::get('speedtest_overview_time')->value . ' * * *');
+        $schedule->job(new TestJob)->cron(SettingsHelper::get('test_schedule')->value);
     }
 
     /**
