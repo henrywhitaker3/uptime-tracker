@@ -18,7 +18,7 @@ A docker image is available [here](https://hub.docker.com/r/henrywhitaker3/uptim
 ```bash
 docker create \
       --name=speedtest \
-      -p 8765:80 \
+      -p 8766:80 \
       -v /path/to/data:/config \
       -e PUID=uid `#optional` \
       -e PGID=gid `#optional` \
@@ -33,7 +33,7 @@ docker create \
         container_name: speedtest
         image: henrywhitaker3/uptime-tracker:dev
         ports:
-            - 8765:80
+            - 8766:80
         volumes:
             - /path/to/data:/config
         environment:
