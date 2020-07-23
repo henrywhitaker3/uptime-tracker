@@ -11,7 +11,7 @@ class UptimeController extends Controller
     /**
      * Get the current uptime status
      *
-     * @return array
+     * @return Response
      */
     public function status()
     {
@@ -22,6 +22,21 @@ class UptimeController extends Controller
             'method' => 'get uptime status',
             'latest' => $latest,
             'uptime' => $uptime,
+        ], 200);
+    }
+
+    /**
+     * Get total up/down time stats
+     *
+     * @return Response
+     */
+    public function totalUptime()
+    {
+        $uptime = PingHelper::totalUptime();
+
+        return response()->json([
+            'method' => 'get total uptime',
+            'data' => $uptime
         ], 200);
     }
 }

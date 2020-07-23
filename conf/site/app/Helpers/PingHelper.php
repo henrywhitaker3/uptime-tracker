@@ -7,7 +7,10 @@ use App\Exceptions\HealthchecksUuidNotFoundException;
 use App\Healthchecks;
 use App\Ping as Ping;
 use Carbon\Carbon;
+use Carbon\CarbonInterval;
 use Illuminate\Http\Client\ConnectionException;
+use Illuminate\Support\Facades\Log;
+use InvalidArgumentException;
 use JJG\Ping as JJPing;
 use Ramsey\Uuid\Exception\InvalidUuidStringException;
 
@@ -179,7 +182,12 @@ class PingHelper {
 
         return [
             'diff' => $diff,
-            'readable' => $readable
+            'readable' => $readable,
+            'stats' => [
+                'total' => PingHelper::totalUptime('all'),
+                'd7' => PingHelper::totalUptime(7),
+                'd30' => PingHelper::totalUptime(30),
+            ]
         ];
     }
 
@@ -205,12 +213,49 @@ class PingHelper {
     }
 
     /**
-     * Get a total up/downtime value for all time
+     * Get a total up/downtime value for given time
      *
-     * @return array
+     * @param string|int $days
+     * @return void
      */
-    public static function totalUptime()
+    public static function totalUptime($days)
     {
+        if($days === 'all') {
+            $pings = Ping::get();
+        } else if(is_int($days)) {
+            $limit = Carbon::now()->subDays($days);
+            $pings = Ping::where('created_at', '>=', $limit)
+                         ->get();
+        } else {
+            throw new InvalidArgumentException();
+        }
 
+        $up = 0;
+        $down = 0;
+
+        $current = null;
+        $prev = null;
+
+        foreach($pings as $ping) {
+            $current = $ping;
+
+            if($prev !== null) {
+                $diff = Carbon::parse($current->created_at)->diffInSeconds(Carbon::parse($prev->created_at));
+
+                if($current->success) {
+                    $up += (int) $diff;
+                } else {
+                    $down += (int) $diff;
+                }
+            }
+
+            $prev = $current;
+        }
+
+        return [
+            'up' => CarbonInterval::seconds($up)->cascade()->forHumans(),
+            'down' => CarbonInterval::seconds($down)->cascade()->forHumans(),
+            'percentage' => ( $up / ( $up + $down ) ) * 100,
+        ];
     }
 }
