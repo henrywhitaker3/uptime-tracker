@@ -122,7 +122,7 @@ export default class WidgetRow extends Component {
                         sm={{ span: 12 }}
                         className="mb-2"
                     >
-                        <Card className="widget-card shadow-sm">
+                        <Card className="widget-card shadow-sm h-100">
                             <Card.Body>
                                 <div>
                                     <div>
@@ -153,7 +153,7 @@ export default class WidgetRow extends Component {
                         sm={{ span: 12 }}
                         className="mb-2"
                     >
-                        <Card className="widget-card shadow-sm">
+                        <Card className="widget-card shadow-sm h-100">
                             <Card.Body>
                                 <div>
                                     <div>
