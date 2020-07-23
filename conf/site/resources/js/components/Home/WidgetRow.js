@@ -55,11 +55,10 @@ export default class WidgetRow extends Component {
         })
     }
 
-    buildData = (latest, uptime, success) => {
+    buildTestData = (latest, uptime, success) => {
         if(latest.type == 'ping') {
             return (
                 <div className="text-truncate text-muted">
-                    <p className="my-0">{success ? 'Uptime: ' : 'Downtime: '} {uptime.readable}</p>
                     <p className="my-0">Type: {latest.type}</p>
                     <p className="my-0">Target: {latest.target}</p>
                     <p className="my-0">Time: {new Date(latest.created_at).toLocaleString()}</p>
@@ -70,12 +69,21 @@ export default class WidgetRow extends Component {
         if(latest.type == 'healthchecks') {
             return (
                 <div className="text-truncate text-muted">
-                    <p className="my-0">{success ? 'Uptime: ' : 'Downtime: '} {uptime.readable}</p>
                     <p className="my-0">Type: {latest.type}</p>
                     <p className="my-0">Time: {new Date(latest.created_at).toLocaleString()}</p>
                 </div>
             )
         }
+    }
+
+    buildUptimeData = (uptime, success) => {
+        return (
+            <div className="text-truncate text-muted">
+                <p className="my-0">7 days: {uptime.stats.d7.percentage.toFixed(1)}% (Up: {uptime.stats.d7.up}, Down: {uptime.stats.d7.down})</p>
+                <p className="my-0">30 days: {uptime.stats.d30.percentage.toFixed(1)}% (Up: {uptime.stats.d30.up}, Down: {uptime.stats.d30.down})</p>
+                <p className="my-0">Total: {uptime.stats.total.percentage.toFixed(1)}% (Up: {uptime.stats.total.up}, Down: {uptime.stats.total.down})</p>
+            </div>
+        );
     }
 
     render() {
@@ -95,19 +103,26 @@ export default class WidgetRow extends Component {
             <Container fluid>
                 <Row>
                     <Col sm={{ span: 12 }} className="text-center mb-2">
-                        <div>
-                            <Button className="d-inline-block mx-3 mb-2" variant="primary" onClick={this.newTest}>Test again</Button>
-                            <p className="text-muted mb-0 d-inline-block">Last test performed at: {new Date(latest.created_at).toLocaleString()}</p>
-                        </div>
+                            {uptime.readable == 'N/A' ?
+                                <div>
+                                    <Button className="d-inline-block mx-3 mb-2" variant="primary" onClick={this.newTest}>Test connection</Button>
+                                </div>
+                            :
+                                <div>
+                                    <Button className="d-inline-block mx-3 mb-2" variant="primary" onClick={this.newTest}>Test again</Button>
+                                    <p className="text-muted mb-0 d-inline-block">Last test performed at: {new Date(latest.created_at).toLocaleString()}</p>
+                                </div>
+                            }
                     </Col>
                 </Row>
                 <Row>
                     <Col
-                        lg={{ span: 4, offset: 4 }}
-                        md={{ span: 4, offset: 4 }}
+                        lg={{ span: 4, offset: 2 }}
+                        md={{ span: 6 }}
                         sm={{ span: 12 }}
+                        className="mb-2"
                     >
-                        <Card className="widget-card shadow-sm">
+                        <Card className="widget-card shadow-sm h-100">
                             <Card.Body>
                                 <div>
                                     <div>
@@ -125,7 +140,38 @@ export default class WidgetRow extends Component {
                                                 <p className="my-0">No connection tests have been run yet</p>
                                             </div>
                                         :
-                                            this.buildData(latest, uptime, success)
+                                            this.buildTestData(latest, uptime, success)
+                                        }
+                                    </div>
+                                </div>
+                            </Card.Body>
+                        </Card>
+                    </Col>
+                    <Col
+                        lg={{ span: 4 }}
+                        md={{ span: 6 }}
+                        sm={{ span: 12 }}
+                        className="mb-2"
+                    >
+                        <Card className="widget-card shadow-sm h-100">
+                            <Card.Body>
+                                <div>
+                                    <div>
+                                        <div className="d-flex align-items-center justify-content-between">
+                                            <h4>{success ? 'Uptime:' : 'Downtime:'} {uptime.readable}</h4>
+                                            {success ?
+                                                <span className="ti-timer icon text-success"></span>
+                                            :
+                                                <span className="ti-timer icon text-danger"></span>
+                                            }
+                                        </div>
+
+                                        {uptime.readable == 'N/A' ?
+                                            <div className="text-muted">
+                                                <p className="my-0">No connection tests have been run yet</p>
+                                            </div>
+                                        :
+                                            this.buildUptimeData(uptime, success)
                                         }
                                     </div>
                                 </div>

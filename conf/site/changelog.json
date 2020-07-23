@@ -1,4 +1,10 @@
 {
+    "1.0.1": [
+        {
+            "description": "Added uptime stats card",
+            "link": ""
+        }
+    ],
     "1.0.0": [
         {
             "description": "First version released",
