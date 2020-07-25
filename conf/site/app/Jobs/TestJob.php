@@ -8,6 +8,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Cache;
 
 class TestJob implements ShouldQueue
 {
@@ -31,5 +32,17 @@ class TestJob implements ShouldQueue
     public function handle()
     {
         PingHelper::ping();
+
+        $opts = [
+            'all',
+            7,
+            30
+        ];
+
+
+        foreach($opts as $opt) {
+            Cache::forget('total-' . $opt);
+            PingHelper::totalUptime($opt);
+        }
     }
 }
