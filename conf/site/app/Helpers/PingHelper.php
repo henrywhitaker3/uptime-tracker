@@ -9,6 +9,7 @@ use App\Ping as Ping;
 use Carbon\Carbon;
 use Carbon\CarbonInterval;
 use Illuminate\Http\Client\ConnectionException;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use InvalidArgumentException;
 use JJG\Ping as JJPing;
@@ -230,32 +231,37 @@ class PingHelper {
             throw new InvalidArgumentException();
         }
 
-        $up = 0;
-        $down = 0;
+        $ttl = Carbon::now()->addDay();
+        $result = Cache::remember('total-' . $days, $ttl, function () use ($pings) {
+            $up = 0;
+            $down = 0;
 
-        $current = null;
-        $prev = null;
+            $current = null;
+            $prev = null;
 
-        foreach($pings as $ping) {
-            $current = $ping;
+            foreach($pings as $ping) {
+                $current = $ping;
 
-            if($prev !== null) {
-                $diff = Carbon::parse($current->created_at)->diffInSeconds(Carbon::parse($prev->created_at));
+                if($prev !== null) {
+                    $diff = Carbon::parse($current->created_at)->diffInSeconds(Carbon::parse($prev->created_at));
 
-                if($current->success) {
-                    $up += (int) $diff;
-                } else {
-                    $down += (int) $diff;
+                    if($current->success) {
+                        $up += (int) $diff;
+                    } else {
+                        $down += (int) $diff;
+                    }
                 }
+
+                $prev = $current;
             }
 
-            $prev = $current;
-        }
+            return [
+                'up' => CarbonInterval::seconds($up)->cascade()->forHumans(),
+                'down' => CarbonInterval::seconds($down)->cascade()->forHumans(),
+                'percentage' => ( $up / ( $up + $down ) ) * 100,
+            ];
+        });
 
-        return [
-            'up' => CarbonInterval::seconds($up)->cascade()->forHumans(),
-            'down' => CarbonInterval::seconds($down)->cascade()->forHumans(),
-            'percentage' => ( $up / ( $up + $down ) ) * 100,
-        ];
+        return $result;
     }
 }
