@@ -227,33 +227,38 @@ class PingHelper {
 
         $pings = PingHelper::cachedPings($days);
 
-        $up = 0;
-        $down = 0;
 
-        $current = null;
-        $prev = null;
+        $result = Cache::rememberForever('uptime-' . $days, function () use ($pings) {
+            $up = 0;
+            $down = 0;
 
-        foreach($pings as $ping) {
-            $current = $ping;
+            $current = null;
+            $prev = null;
 
-            if($prev !== null) {
-                $diff = Carbon::parse($current->created_at)->diffInSeconds(Carbon::parse($prev->created_at));
+            foreach($pings as $ping) {
+                $current = $ping;
 
-                if($current->success) {
-                    $up += (int) $diff;
-                } else {
-                    $down += (int) $diff;
+                if($prev !== null) {
+                    $diff = Carbon::parse($current->created_at)->diffInSeconds(Carbon::parse($prev->created_at));
+
+                    if($current->success) {
+                        $up += (int) $diff;
+                    } else {
+                        $down += (int) $diff;
+                    }
                 }
+
+                $prev = $current;
             }
 
-            $prev = $current;
-        }
+            return [
+                'up' => CarbonInterval::seconds($up)->cascade()->forHumans(),
+                'down' => CarbonInterval::seconds($down)->cascade()->forHumans(),
+                'percentage' => ( $up / ( $up + $down ) ) * 100,
+            ];
+        });
 
-        return [
-            'up' => CarbonInterval::seconds($up)->cascade()->forHumans(),
-            'down' => CarbonInterval::seconds($down)->cascade()->forHumans(),
-            'percentage' => ( $up / ( $up + $down ) ) * 100,
-        ];
+        return $result;
     }
 
     /**
@@ -302,7 +307,9 @@ class PingHelper {
             $pings->push($ping);
 
             Cache::forget('total-pings-' . $day);
-            Cache::forever('total-pings-' . $day, $pings);;
+            Cache::forget('uptime-' . $day);
+            Cache::forever('total-pings-' . $day, $pings);
+            PingHelper::totalUptime($day);
         }
     }
 }
