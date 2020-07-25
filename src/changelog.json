@@ -1,4 +1,10 @@
 {
+    "1.0.3": [
+        {
+            "description": "Re-worked caching",
+            "link": ""
+        }
+    ],
     "1.0.2": [
         {
             "description": "Cache total uptime to speed up UI loading",
