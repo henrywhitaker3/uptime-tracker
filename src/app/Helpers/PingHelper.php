@@ -221,47 +221,88 @@ class PingHelper {
      */
     public static function totalUptime($days)
     {
-        if($days === 'all') {
-            $pings = Ping::get();
-        } else if(is_int($days)) {
-            $limit = Carbon::now()->subDays($days);
-            $pings = Ping::where('created_at', '>=', $limit)
-                         ->get();
-        } else {
+        if($days !== 'all' && !is_int($days)) {
             throw new InvalidArgumentException();
         }
 
-        $ttl = Carbon::now()->addDay();
-        $result = Cache::remember('total-' . $days, $ttl, function () use ($pings) {
-            $up = 0;
-            $down = 0;
+        $pings = PingHelper::cachedPings($days);
 
-            $current = null;
-            $prev = null;
+        $up = 0;
+        $down = 0;
 
-            foreach($pings as $ping) {
-                $current = $ping;
+        $current = null;
+        $prev = null;
 
-                if($prev !== null) {
-                    $diff = Carbon::parse($current->created_at)->diffInSeconds(Carbon::parse($prev->created_at));
+        foreach($pings as $ping) {
+            $current = $ping;
 
-                    if($current->success) {
-                        $up += (int) $diff;
-                    } else {
-                        $down += (int) $diff;
-                    }
+            if($prev !== null) {
+                $diff = Carbon::parse($current->created_at)->diffInSeconds(Carbon::parse($prev->created_at));
+
+                if($current->success) {
+                    $up += (int) $diff;
+                } else {
+                    $down += (int) $diff;
                 }
-
-                $prev = $current;
             }
 
-            return [
-                'up' => CarbonInterval::seconds($up)->cascade()->forHumans(),
-                'down' => CarbonInterval::seconds($down)->cascade()->forHumans(),
-                'percentage' => ( $up / ( $up + $down ) ) * 100,
-            ];
+            $prev = $current;
+        }
+
+        return [
+            'up' => CarbonInterval::seconds($up)->cascade()->forHumans(),
+            'down' => CarbonInterval::seconds($down)->cascade()->forHumans(),
+            'percentage' => ( $up / ( $up + $down ) ) * 100,
+        ];
+    }
+
+    /**
+     * Return ping models from cache
+     *
+     * @param string|int $days
+     * @return Collection
+     */
+    public static function cachedPings($days)
+    {
+        if($days !== 'all' && !is_int($days)) {
+            throw new InvalidArgumentException();
+        }
+
+        $pings = Cache::rememberForever('total-pings-' . $days, function () use ($days) {
+            if($days === 'all') {
+                $pings = Ping::get();
+            } else if(is_int($days)) {
+                $limit = Carbon::now()->subDays($days);
+                $pings = Ping::where('created_at', '>=', $limit)
+                             ->get();
+            }
+
+            return $pings;
         });
 
-        return $result;
+        return $pings;
+    }
+
+    /**
+     * Add a ping to the cache
+     *
+     * @param Ping $ping
+     * @return void
+     */
+    public static function addPingToCache(Ping $ping)
+    {
+        $days = [
+            'all',
+            7,
+            30
+        ];
+
+        foreach($days as $day) {
+            $pings = PingHelper::cachedPings($day);
+            $pings->push($ping);
+
+            Cache::forget('total-pings-' . $day);
+            Cache::forever('total-pings-' . $day, $pings);;
+        }
     }
 }
