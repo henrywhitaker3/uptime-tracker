@@ -1,0 +1,69 @@
+version: 2
+updates:
+- package-ecosystem: composer
+  directory: "/src"
+  schedule:
+    interval: daily
+  open-pull-requests-limit: 10
+  target-branch: dev
+  ignore:
+  - dependency-name: symfony/http-kernel
+    versions:
+    - 5.2.2
+    - 5.2.3
+    - 5.2.4
+    - 5.2.5
+  - dependency-name: facade/ignition
+    versions:
+    - 2.5.10
+    - 2.5.11
+    - 2.5.12
+    - 2.5.9
+  - dependency-name: laravel/tinker
+    versions:
+    - 2.6.0
+  - dependency-name: nunomaduro/collision
+    versions:
+    - 5.3.0
+  - dependency-name: doctrine/dbal
+    versions:
+    - 3.0.0
+  - dependency-name: fruitcake/laravel-cors
+    versions:
+    - 2.0.3
+  - dependency-name: mockery/mockery
+    versions:
+    - 1.4.2
+- package-ecosystem: npm
+  directory: "/src"
+  schedule:
+    interval: daily
+  open-pull-requests-limit: 10
+  target-branch: dev
+  ignore:
+  - dependency-name: sass
+    versions:
+    - 1.32.11
+    - 1.32.5
+    - 1.32.6
+    - 1.32.7
+    - 1.32.8
+  - dependency-name: y18n
+    versions:
+    - 4.0.1
+    - 4.0.2
+  - dependency-name: react-bootstrap
+    versions:
+    - 1.4.3
+    - 1.5.0
+    - 1.5.1
+  - dependency-name: react-toastify
+    versions:
+    - 7.0.2
+    - 7.0.3
+  - dependency-name: react-chartjs-2
+    versions:
+    - 2.11.1
+  - dependency-name: lodash
+    versions:
+    - 4.17.20
